@@ -16,5 +16,10 @@ namespace crud_net_6.Data.Repositories
         {
             return await _context.Set<T>().ToListAsync();
         }
+
+        public async Task<T> GetById(int id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
     }
 }

@@ -33,5 +33,24 @@ namespace crud_net_6.Controllers
                 return StatusCode(500, "Internal Server Error. Please try again later");
             }
         }
+
+        [HttpGet("getById/{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> getById(int id)
+        {
+            try
+            {
+                var data = await _repository.GetById(id);
+
+                if (data != null) return Ok(data);
+                else return Ok("No data found");
+
+            }catch(Exception ex)
+            {
+                _logger.LogError($"Failed to get item: {ex}");
+                return StatusCode(500, "Internal Server Error. Please try again later");
+            }
+        }
     }
 }

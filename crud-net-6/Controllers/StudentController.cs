@@ -52,5 +52,36 @@ namespace crud_net_6.Controllers
                 return StatusCode(500, "Internal Server Error. Please try again later");
             }
         }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> Post([FromBody] TblStudent model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var data = await _repository.existsAsync(x => x.FirstName.Trim() == model.FirstName.Trim() && x.LastName.Trim() == model.LastName.Trim());
+
+                    if (data) return Conflict("Already exists");
+
+                    _repository.add(model);
+
+                    if (await _repository.SaveChangesAsync())
+                    {
+                        return Created($"/api/[controller]/getById/{model.Id}", model);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to get items: {ex}");
+                return StatusCode(500, "Something went wrong");
+            }
+
+            return BadRequest("The requested action cannot be executed.");
+        }
     }
 }

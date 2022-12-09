@@ -83,5 +83,40 @@ namespace crud_net_6.Controllers
 
             return BadRequest("The requested action cannot be executed.");
         }
+
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<TblStudent>> Put([FromBody] TblStudent model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var table = await _repository.GetById(model.Id);
+
+                    if (table == null) return NotFound($"No item was found, id {model.Id}");
+
+                    var data = await _repository.existsAsync(x => x.FirstName.Trim() == model.FirstName.Trim() && x.LastName.Trim() == model.LastName.Trim() && x.Id != model.Id);
+
+                    if (data) return Conflict("Already exists");
+
+                    _repository.update(model);
+
+                    if (await _repository.SaveChangesAsync()) return Ok();
+                    else return StatusCode(204, "No data was modified");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to get items: {ex}");
+                return StatusCode(500, "Something went wrong");
+            }
+
+            return BadRequest("The requested action cannot be executed.");
+        }
     }
 }

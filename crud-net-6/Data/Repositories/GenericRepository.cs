@@ -21,7 +21,9 @@ namespace crud_net_6.Data.Repositories
 
         public async Task<T> GetById(int id)
         {
-            return await _context.Set<T>().FindAsync(id);
+            var entity = await _context.Set<T>().FindAsync(id);
+            _context.Entry(entity).State = EntityState.Detached;
+            return entity;
         }
 
         public virtual async Task<bool> SaveChangesAsync()
@@ -37,6 +39,11 @@ namespace crud_net_6.Data.Repositories
         public virtual async Task<bool> existsAsync(Expression<Func<T, bool>> predicate)
         {
             return await _context.Set<T>().AsNoTracking().AnyAsync(predicate);
+        }
+
+        public void update(T entity)
+        {
+            _context.Set<T>().Update(entity);
         }
     }
 }

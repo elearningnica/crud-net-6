@@ -9,5 +9,7 @@ namespace crud_net_6.Data.Interfaces
         Task<bool> existsAsync(Expression<Func<T, bool>> predicate);
         Task<bool> SaveChangesAsync();
         T add(T entity);
+
+        void update(T entity);
     }
 }

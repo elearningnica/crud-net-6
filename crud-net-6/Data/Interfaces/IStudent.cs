@@ -11,5 +11,7 @@ namespace crud_net_6.Data.Interfaces
         T add(T entity);
 
         void update(T entity);
+
+        void delete(T entity);
     }
 }

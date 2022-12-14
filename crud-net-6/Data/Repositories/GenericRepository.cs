@@ -45,5 +45,10 @@ namespace crud_net_6.Data.Repositories
         {
             _context.Set<T>().Update(entity);
         }
+
+        public void delete(T entity)
+        {
+            _context.Set<T>().Remove(entity);
+        }
     }
 }

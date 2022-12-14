@@ -118,5 +118,35 @@ namespace crud_net_6.Controllers
 
             return BadRequest("The requested action cannot be executed.");
         }
+
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var table = await _repository.GetById(id);
+
+                    if (table == null) return NotFound($"No item was found, id {id}");
+
+                    _repository.delete(table);
+
+                    if (await _repository.SaveChangesAsync()) return Ok("Data successfully deleted.");
+                    else return StatusCode(204, "No data was modified");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to get items: {ex}");
+                return StatusCode(500, "Something went wrong");
+            }
+
+            return BadRequest("The requested action cannot be executed.");
+        }
     }
 }
